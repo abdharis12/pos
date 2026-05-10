@@ -16,7 +16,7 @@ class OrderController extends Controller
                 'cashier',
             ])
             ->latest()
-            ->paginate(20);
+            ->paginate(10);
 
         return Inertia::render(
             'pos/orders/index',

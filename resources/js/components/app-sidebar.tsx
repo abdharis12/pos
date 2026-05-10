@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { LayoutGrid } from 'lucide-react';
+import { ChartArea, LayoutGrid, LucideStore, ShoppingBag } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavMain } from '@/components/nav-main';
 import {
@@ -10,24 +10,29 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard, posIndex, posOrders } from '@/routes';
+import { dashboard, posIndex, posOrders, productsIndex } from '@/routes';
 import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
         href: dashboard(),
+        icon: ChartArea,
+    },
+    {
+        title: 'Products',
+        href: productsIndex(),
         icon: LayoutGrid,
     },
     {
-        title: 'Pos',
+        title: 'Point of Sale',
         href: posIndex(),
-        icon: LayoutGrid,
+        icon: LucideStore,
     },
     {
         title: 'Orders',
         href: posOrders(),
-        icon: LayoutGrid,
+        icon: ShoppingBag,
     },
 ];
 

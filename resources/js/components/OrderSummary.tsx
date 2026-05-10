@@ -7,336 +7,222 @@ import { formatRupiah } from '@/lib/currency';
 import { usePosStore } from '@/pages/pos/stores/usePosStore';
 import { formatNumber, parseNumber } from '@/lib/number';
 
+const QUICK_AMOUNTS = [50_000, 100_000];
+
 export default function OrderSummary() {
-    const cart = usePosStore(
-        (state) => state.cart,
-    );
-
-    const total = usePosStore(
-        (state) => state.total(),
-    );
-
-    const customerName = usePosStore(
-        (state) => state.customerName,
-    );
-
-    const setCustomerName = usePosStore(
-        (state) => state.setCustomerName,
-    );
-
-    const paymentMethod = usePosStore(
-        (state) => state.paymentMethod,
-    );
-
-    const setPaymentMethod = usePosStore(
-        (state) =>
-            state.setPaymentMethod,
-    );
-
-    const paidAmount = usePosStore(
-        (state) => state.paidAmount,
-    );
-
-    const setPaidAmount = usePosStore(
-        (state) => state.setPaidAmount,
-    );
-
-    const changeAmount = usePosStore(
-        (state) =>
-            state.changeAmount(),
-    );
-
-    const clearCart = usePosStore(
-        (state) => state.clearCart,
-    );
-
-    const orderType = usePosStore(
-        (state) => state.orderType,
-    );
+    const cart = usePosStore((state) => state.cart);
+    const total = usePosStore((state) => state.total());
+    const customerName = usePosStore((state) => state.customerName);
+    const setCustomerName = usePosStore((state) => state.setCustomerName);
+    const paymentMethod = usePosStore((state) => state.paymentMethod);
+    const setPaymentMethod = usePosStore((state) => state.setPaymentMethod);
+    const paidAmount = usePosStore((state) => state.paidAmount);
+    const setPaidAmount = usePosStore((state) => state.setPaidAmount);
+    const changeAmount = usePosStore((state) => state.changeAmount());
+    const clearCart = usePosStore((state) => state.clearCart);
+    const orderType = usePosStore((state) => state.orderType);
 
     const handleCheckout = () => {
         router.post(
             '/pos/checkout',
             {
-                customer_name:
-                    customerName,
-
+                customer_name: customerName,
                 order_type: orderType,
-
-                payment_method:
-                    paymentMethod,
-
-                paid_amount:
-                    Number(
-                        paidAmount || 0,
-                    ),
-
-                items: cart.map(
-                    (item) => ({
-                        product_id:
-                            item.product
-                                .id,
-
-                        qty: item.qty,
-                    }),
-                ),
+                payment_method: paymentMethod,
+                paid_amount: Number(paidAmount || 0),
+                items: cart.map((item) => ({
+                    product_id: item.product.id,
+                    qty: item.qty,
+                })),
             },
             {
                 preserveScroll: true,
-
                 onSuccess: () => {
-                    toast.success(
-                        'Transaksi berhasil',
-                    );
-
+                    toast.success('Transaksi berhasil');
                     clearCart();
                 },
-
-                onError: (
-                    errors,
-                ) => {
-                    console.error(
-                        errors,
-                    );
-
-                    const firstError =
-                        Object.values(
-                            errors,
-                        )[0];
-
-                    toast.error(
-                        String(
-                            firstError,
-                        ),
-                    );
+                onError: (errors) => {
+                    console.error(errors);
+                    const firstError = Object.values(errors)[0];
+                    toast.error(String(firstError));
                 },
             },
         );
     };
 
     const canCheckout = () => {
-        if (cart.length === 0) {
-            return false;
-        }
-
-        if (!paymentMethod) {
-            return false;
-        }
-
-        if (
-            paymentMethod ===
-            'cash' &&
-            Number(paidAmount || 0) < total
-        ) {
-            return false;
-        }
-
+        if (cart.length === 0) return false;
+        if (!paymentMethod) return false;
+        if (paymentMethod === 'cash' && Number(paidAmount || 0) < total) return false;
         return true;
     };
 
-    return (
-        <div className="h-[45vh] w-full overflow-y-auto border-t bg-white p-4 lg:h-full lg:w-[400px] lg:border-l lg:border-t-0 lg:p-6">
-            <h2 className="mb-6 text-2xl font-bold">
-                Order Summary
-            </h2>
+    const PaidAmountInput = () => (
+        <div>
+            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-widest text-stone-400">
+                Uang Dibayarkan
+            </label>
 
-            {/* CUSTOMER */}
-            <div className="mb-4">
-                <label className="mb-2 block text-sm font-medium">
-                    Nama Pelanggan
-                </label>
-
-                <input
-                    type="text"
-                    value={customerName}
-                    onChange={(e) =>
-                        setCustomerName(
-                            e.target.value,
-                        )
-                    }
-                    placeholder="Optional"
-                    className="w-full rounded-2xl border border-zinc-200 px-4 py-3 outline-none focus:border-blue-500"
-                />
-            </div>
-
-            {/* ITEMS */}
-            <div className="flex-1 space-y-3 overflow-y-auto">
-                {cart.length === 0 && (
-                    <div className="rounded-2xl bg-zinc-100 p-6 text-center text-zinc-500">
-                        Belum ada item
-                    </div>
-                )}
-
-                {cart.map((item) => (
-                    <div
-                        key={
-                            item.product.id
-                        }
-                        className="flex items-center justify-between rounded-2xl bg-zinc-100 p-4"
+            {/* Quick amount buttons */}
+            <div className="mb-2 grid grid-cols-2 gap-2">
+                {QUICK_AMOUNTS.map((amount) => (
+                    <button
+                        key={amount}
+                        type="button"
+                        onClick={() => setPaidAmount(amount)}
+                        className={`rounded-xl border py-2 text-sm font-bold transition-all duration-200 active:scale-95 ${Number(paidAmount) === amount
+                                ? 'border-amber-400 bg-amber-400 text-stone-900'
+                                : 'border-stone-700 bg-stone-800 text-stone-300 hover:border-stone-500 hover:text-white'
+                            }`}
                     >
-                        <div>
-                            <h3 className="font-semibold">
-                                {
-                                    item.product
-                                        .name
-                                }
-                            </h3>
-
-                            <p className="text-sm text-zinc-500">
-                                {item.qty} x{' '}
-                                {formatRupiah(
-                                    item
-                                        .product
-                                        .price,
-                                )}
-                            </p>
-                        </div>
-
-                        <div className="font-bold">
-                            {formatRupiah(
-                                item.subtotal,
-                            )}
-                        </div>
-                    </div>
+                        {formatRupiah(amount)}
+                    </button>
                 ))}
             </div>
 
-            {/* TOTAL */}
-            <div className="mt-6 rounded-3xl bg-zinc-100 p-5">
-                <div className="flex items-center justify-between">
-                    <span className="text-zinc-500">
-                        Total
-                    </span>
+            {/* Manual input */}
+            <input
+                type="text"
+                inputMode="numeric"
+                value={formatNumber(paidAmount)}
+                onChange={(e) => {
+                    const raw = e.target.value;
+                    if (raw === '') { setPaidAmount(''); return; }
+                    const parsed = parseNumber(raw);
+                    if (isNaN(parsed)) return;
+                    setPaidAmount(parsed);
+                }}
+                placeholder="Atau ketik nominal lain..."
+                className="w-full rounded-xl border border-stone-700 bg-stone-800 px-4 py-2.5 text-sm text-white placeholder-stone-500 outline-none transition focus:border-amber-400 focus:ring-1 focus:ring-amber-400/30"
+            />
 
-                    <span className="text-3xl font-bold">
-                        {formatRupiah(
-                            total,
-                        )}
-                    </span>
-                </div>
+            <div className="mt-2 flex items-center justify-between rounded-xl bg-stone-800 px-4 py-3">
+                <span className="text-sm text-stone-400">Kembalian</span>
+                <span className="text-base font-bold text-emerald-400">
+                    {formatRupiah(changeAmount)}
+                </span>
+            </div>
+        </div>
+    );
+
+    return (
+        <div className="flex h-[50vh] w-full flex-col overflow-hidden border-t border-stone-200 bg-stone-900 lg:h-full lg:w-[380px] lg:border-l lg:border-t-0">
+            {/* Header */}
+            <div className="shrink-0 border-b border-stone-700/60 px-5 py-4">
+                <h2 className="text-lg font-bold tracking-tight text-white">Pesanan</h2>
+                <p className="text-xs text-stone-400">{cart.length} item dipilih</p>
             </div>
 
-            {/* PAYMENT */}
-            <div className="mt-6">
-                <label className="mb-3 block text-sm font-medium">
-                    Metode Pembayaran
-                </label>
-
-                <div className="grid grid-cols-2 gap-3">
-                    <button
-                        type="button"
-                        onClick={() =>
-                            setPaymentMethod(
-                                'cash',
-                            )
-                        }
-                        className={`rounded-2xl border p-4 font-semibold transition ${paymentMethod ===
-                            'cash'
-                            ? 'border-green-600 bg-green-50 text-green-700'
-                            : 'border-zinc-200'
-                            }`}
-                    >
-                        Cash
-                    </button>
-
-                    <button
-                        type="button"
-                        onClick={() =>
-                            setPaymentMethod(
-                                'qris',
-                            )
-                        }
-                        className={`rounded-2xl border p-4 font-semibold transition ${paymentMethod ===
-                            'qris'
-                            ? 'border-blue-600 bg-blue-50 text-blue-700'
-                            : 'border-zinc-200'
-                            }`}
-                    >
-                        QRIS
-                    </button>
+            <div className="flex flex-1 flex-col gap-4 overflow-y-auto px-5 py-4 scrollbar-none">
+                {/* Customer */}
+                <div>
+                    <label className="mb-1.5 block text-xs font-semibold uppercase tracking-widest text-stone-400">
+                        Nama Pelanggan
+                    </label>
+                    <input
+                        type="text"
+                        value={customerName}
+                        onChange={(e) => setCustomerName(e.target.value)}
+                        placeholder="Optional"
+                        className="w-full rounded-xl border border-stone-700 bg-stone-800 px-4 py-2.5 text-sm text-white placeholder-stone-500 outline-none transition focus:border-amber-400 focus:ring-1 focus:ring-amber-400/30"
+                    />
                 </div>
-            </div>
 
-            {/* CASH */}
-            {paymentMethod ===
-                'cash' && (
-                    <div className="mt-6">
-                        <label className="mb-2 block text-sm font-medium">
-                            Uang Dibayarkan
-                        </label>
+                {/* Items */}
+                <div className="space-y-2">
+                    {cart.length === 0 && (
+                        <div className="rounded-xl border border-dashed border-stone-700 py-8 text-center text-sm text-stone-500">
+                            Belum ada item dipilih
+                        </div>
+                    )}
 
-                        <input
-                            type="text"
-                            inputMode="numeric"
-                            value={formatNumber(
-                                paidAmount,
-                            )}
-                            onChange={(e) => {
-                                const raw =
-                                    e.target.value;
-
-                                if (raw === '') {
-                                    setPaidAmount('');
-
-                                    return;
-                                }
-
-                                const parsed =
-                                    parseNumber(raw);
-
-                                if (isNaN(parsed)) {
-                                    return;
-                                }
-
-                                setPaidAmount(parsed);
-                            }}
-                            placeholder="0"
-                            className="w-full rounded-2xl border border-zinc-200 px-4 py-3 outline-none focus:border-blue-500"
-                        />
-
-                        <div className="mt-4 rounded-2xl bg-blue-50 p-4">
-                            <div className="flex items-center justify-between">
-                                <span className="text-blue-700">
-                                    Kembalian
-                                </span>
-
-                                <span className="text-xl font-bold text-blue-700">
-                                    {formatRupiah(
-                                        changeAmount,
-                                    )}
-                                </span>
+                    {cart.map((item) => (
+                        <div
+                            key={item.product.id}
+                            className="flex items-center justify-between rounded-xl bg-stone-800 px-4 py-3"
+                        >
+                            <div className="min-w-0 flex-1">
+                                <h3 className="truncate text-sm font-semibold text-white">
+                                    {item.product.name}
+                                </h3>
+                                <p className="text-xs text-stone-400">
+                                    {item.qty} × {formatRupiah(item.product.price)}
+                                </p>
+                            </div>
+                            <div className="ml-3 shrink-0 text-sm font-bold text-amber-400">
+                                {formatRupiah(item.subtotal)}
                             </div>
                         </div>
+                    ))}
+                </div>
+
+                {/* Total */}
+                <div className="rounded-xl bg-amber-400 px-5 py-4">
+                    <div className="flex items-center justify-between">
+                        <span className="text-sm font-semibold text-stone-800">Total</span>
+                        <span className="text-2xl font-black tracking-tight text-stone-900">
+                            {formatRupiah(total)}
+                        </span>
+                    </div>
+                </div>
+
+                {/* Payment Method */}
+                <div>
+                    <label className="mb-2 block text-xs font-semibold uppercase tracking-widest text-stone-400">
+                        Metode Pembayaran
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                        <button
+                            type="button"
+                            onClick={() => setPaymentMethod('cash')}
+                            className={`rounded-xl border py-3 text-sm font-bold transition-all duration-200 ${paymentMethod === 'cash'
+                                    ? 'border-amber-400 bg-amber-400 text-stone-900'
+                                    : 'border-stone-700 bg-stone-800 text-stone-400 hover:border-stone-500 hover:text-white'
+                                }`}
+                        >
+                            💵 Cash
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setPaymentMethod('qris')}
+                            className={`rounded-xl border py-3 text-sm font-bold transition-all duration-200 ${paymentMethod === 'qris'
+                                    ? 'border-amber-400 bg-amber-400 text-stone-900'
+                                    : 'border-stone-700 bg-stone-800 text-stone-400 hover:border-stone-500 hover:text-white'
+                                }`}
+                        >
+                            📱 QRIS
+                        </button>
+                    </div>
+                </div>
+
+                {/* Cash */}
+                {paymentMethod === 'cash' && <PaidAmountInput />}
+
+                {/* QRIS */}
+                {paymentMethod === 'qris' && (
+                    <div className="space-y-3">
+                        <div className="rounded-xl border border-stone-700 bg-stone-800 p-5 text-center">
+                            <div className="mb-1 text-2xl">⬛</div>
+                            <p className="text-sm font-semibold text-white">Scan QRIS</p>
+                            <p className="mt-0.5 text-xs text-stone-400">Pembayaran digital</p>
+                        </div>
+
+                        <PaidAmountInput />
                     </div>
                 )}
+            </div>
 
-            {/* QRIS */}
-            {paymentMethod ===
-                'qris' && (
-                    <div className="mt-6 rounded-2xl bg-blue-50 p-5 text-center">
-                        <p className="font-semibold text-blue-700">
-                            Scan QRIS
-                        </p>
-
-                        <p className="mt-1 text-sm text-blue-500">
-                            Pembayaran digital
-                        </p>
-                    </div>
-                )}
-
-            {/* BUTTON */}
-            <button
-                type="button"
-                disabled={
-                    !canCheckout()
-                }
-                onClick={
-                    handleCheckout
-                }
-                className="mt-6 rounded-2xl bg-blue-600 py-4 text-lg font-semibold text-white transition hover:bg-blue-700 disabled:bg-zinc-300"
-            >
-                Proses Bayar
-            </button>
+            {/* Checkout Button */}
+            <div className="shrink-0 border-t border-stone-700/60 p-4">
+                <button
+                    type="button"
+                    disabled={!canCheckout()}
+                    onClick={handleCheckout}
+                    className="w-full rounded-xl bg-amber-400 py-4 text-base font-black tracking-tight text-stone-900 shadow-lg shadow-amber-900/20 transition-all duration-200 hover:bg-amber-300 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-stone-700 disabled:text-stone-500 disabled:shadow-none"
+                >
+                    Proses Bayar
+                </button>
+            </div>
         </div>
     );
 }
