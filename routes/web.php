@@ -9,8 +9,10 @@ use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
 Route::inertia('/', 'welcome', [
-    'canRegister' => Features::enabled(Features::registration()),
+    'canRegister' => false,
 ])->name('home');
+
+Route::get('/register', fn() => abort(404));
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');

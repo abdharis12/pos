@@ -28,4 +28,21 @@ class Product extends Model
             OrderItem::class,
         );
     }
+
+    protected static function booted(): void
+    {
+        static::creating(function (
+            Product $product,
+        ) {
+
+            if (!$product->sku) {
+
+                $product->sku =
+                    'PRD-' .
+                    strtoupper(
+                        str()->random(8),
+                    );
+            }
+        });
+    }
 }

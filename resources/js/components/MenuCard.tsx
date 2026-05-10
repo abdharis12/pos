@@ -19,6 +19,8 @@ export default function MenuCard({ product }: Props) {
     const item = cart.find((item) => item.product.id === product.id);
     const qty = item?.qty ?? 0;
 
+    console.log('product:', product.name, '| image:', product.image);
+
     return (
         <div
             className={`
@@ -29,35 +31,45 @@ export default function MenuCard({ product }: Props) {
                 }
             `}
         >
-            {/* Top color band */}
-            <div
-                className={`h-2 w-full transition-all duration-300 ${qty > 0 ? 'bg-amber-400' : 'bg-stone-100 group-hover:bg-stone-200'
-                    }`}
-            />
+            {/* Product image */}
+            <div className="relative h-32 w-full overflow-hidden bg-stone-100">
+                {product.image ? (
+                    <img
+                        src={`/storage/${product.image}`}
+                        alt={product.name}
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                ) : (
+                    <div className="flex h-full w-full items-center justify-center">
+                        <span className="text-4xl">🍚</span>
+                    </div>
+                )}
 
-            <div className="flex flex-1 flex-col bg-white p-4">
-                {/* Badge qty */}
                 {qty > 0 && (
-                    <span className="absolute right-3 top-5 flex h-6 w-6 items-center justify-center rounded-full bg-amber-400 text-[11px] font-black text-stone-900 shadow">
+                    <span className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-amber-400 text-[11px] font-black text-stone-900 shadow">
                         {qty}
                     </span>
                 )}
 
-                {/* Product info */}
-                <div className="mb-5 flex-1">
-                    <h2 className="pr-6 text-[14px] font-bold leading-snug tracking-tight text-stone-900">
+                {qty > 0 && (
+                    <div className="absolute inset-0 bg-amber-400/10" />
+                )}
+            </div>
+
+            <div className="flex flex-1 flex-col bg-white p-3">
+                <div className="mb-3 flex-1">
+                    <h2 className="text-[13px] font-bold leading-snug tracking-tight text-stone-900">
                         {product.name}
                     </h2>
-                    <p className="mt-2 text-sm font-semibold text-amber-500">
+                    <p className="mt-1 text-sm font-semibold text-amber-500">
                         {formatRupiah(product.price)}
                     </p>
                 </div>
 
-                {/* Controls */}
                 <div
                     className={`flex items-center rounded-2xl transition-all duration-300 ${qty > 0
-                        ? 'justify-between bg-stone-900 p-1'
-                        : 'justify-end'
+                            ? 'justify-between bg-stone-900 p-1'
+                            : 'justify-end'
                         }`}
                 >
                     {qty > 0 && (

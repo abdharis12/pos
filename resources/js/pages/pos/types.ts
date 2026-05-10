@@ -13,6 +13,8 @@ export interface Product {
     stock: number;
     is_active: boolean;
     category: Category;
+    image: string | null;
+    description: string | null;
 }
 
 export interface CartItem {

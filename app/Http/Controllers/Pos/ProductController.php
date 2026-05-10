@@ -54,10 +54,6 @@ class ProductController extends Controller
             'pos/products/create',
             [
                 'categories' => Category::query()
-                    ->where(
-                        'is_active',
-                        true,
-                    )
                     ->orderBy('name')
                     ->get(),
             ],
@@ -112,7 +108,7 @@ class ProductController extends Controller
 
         return redirect()
             ->route(
-                'products.index',
+                'productsIndex',
             )
             ->with(
                 'success',
@@ -130,10 +126,6 @@ class ProductController extends Controller
                 'product' => $product,
 
                 'categories' => Category::query()
-                    ->where(
-                        'is_active',
-                        true,
-                    )
                     ->orderBy('name')
                     ->get(),
             ],
@@ -145,13 +137,33 @@ class ProductController extends Controller
         Product $product,
     ): RedirectResponse {
 
-        $image = $product->image;
+        $data = $request->validated();
 
-        if (
-            $request->hasFile('image')
-        ) {
+        /*
+    |--------------------------------------------------------------------------
+    | KEEP OLD IMAGE
+    |--------------------------------------------------------------------------
+    */
+        $data['image'] = $product->image;
 
-            if ($product->image) {
+        /*
+    |--------------------------------------------------------------------------
+    | UPLOAD NEW IMAGE
+    |--------------------------------------------------------------------------
+    */
+        if ($request->hasFile('image')) {
+
+            /*
+        |--------------------------------------------------------------------------
+        | DELETE OLD IMAGE
+        |--------------------------------------------------------------------------
+        */
+            if (
+                $product->image &&
+                Storage::disk('public')->exists(
+                    $product->image,
+                )
+            ) {
 
                 Storage::disk('public')
                     ->delete(
@@ -159,7 +171,12 @@ class ProductController extends Controller
                     );
             }
 
-            $image = $request
+            /*
+        |--------------------------------------------------------------------------
+        | STORE NEW IMAGE
+        |--------------------------------------------------------------------------
+        */
+            $data['image'] = $request
                 ->file('image')
                 ->store(
                     'products',
@@ -169,25 +186,25 @@ class ProductController extends Controller
 
         $product->update([
             'category_id' =>
-            $request->category_id,
+            $data['category_id'],
 
             'name' =>
-            $request->name,
+            $data['name'],
 
             'sku' =>
-            $request->sku,
+            $data['sku'],
 
             'description' =>
-            $request->description,
+            $data['description'],
 
             'image' =>
-            $image,
+            $data['image'],
 
             'price' =>
-            $request->price,
+            $data['price'],
 
             'stock' =>
-            $request->stock,
+            $data['stock'],
 
             'is_active' =>
             $request->boolean(
@@ -195,14 +212,7 @@ class ProductController extends Controller
             ),
         ]);
 
-        return redirect()
-            ->route(
-                'products.index',
-            )
-            ->with(
-                'success',
-                'Produk berhasil diupdate',
-            );
+        return redirect()->route('productsIndex')->with('success', 'Produk berhasil diupdate');
     }
 
     public function destroy(
