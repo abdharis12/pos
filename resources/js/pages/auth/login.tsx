@@ -40,8 +40,8 @@ export default function Login({ status, canResetPassword }: Props) {
 
                     {/* Brand mark */}
                     <div className="mb-10 flex flex-col items-center gap-3">
-                        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-400 text-2xl shadow-lg shadow-amber-400/30">
-                            🍚
+                        <div className="flex h-14 w-14 items-center justify-center border-2 border-amber-500 rounded-2xl bg-white text-2xl shadow-lg shadow-amber-400/30">
+                            <img src="/kanglwlogo.png" alt="Bubur Ayam Kang LW Logo" className="h-8 w-8" />
                         </div>
                         <div className="text-center">
                             <h1 className="text-xl font-black tracking-tight text-white">
