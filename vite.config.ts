@@ -5,21 +5,27 @@ import react from '@vitejs/plugin-react';
 import laravel from 'laravel-vite-plugin';
 import { defineConfig } from 'vite';
 
-export default defineConfig({
-    plugins: [
-        laravel({
-            input: ['resources/css/app.css', 'resources/js/app.tsx'],
-            refresh: true,
-        }),
-        inertia(),
-        react({
-            babel: {
-                plugins: ['babel-plugin-react-compiler'],
-            },
-        }),
-        tailwindcss(),
-        wayfinder({
-            formVariants: false,
-        }),
-    ],
+export default defineConfig(({ mode }) => {
+    // Mengecek apakah sedang dalam mode production
+    const isProduction = mode === 'production';
+
+    return {
+        plugins: [
+            laravel({
+                input: ['resources/css/app.css', 'resources/js/app.tsx'],
+                refresh: true,
+            }),
+            inertia(),
+            react({
+                babel: {
+                    plugins: ['babel-plugin-react-compiler'],
+                },
+            }),
+            tailwindcss(),
+            wayfinder({
+                formVariants: false,
+                generateOnBuild: !isProduction, 
+            }),
+        ],
+    };
 });
