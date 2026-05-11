@@ -6,25 +6,21 @@
     }
   },
   "routes": [
-    {
-      "src": "/favicon.ico",
-      "dest": "/public/favicon.ico"
-    },
-    {
-      "src": "/kanglwlogo.png",
-      "dest": "/public/kanglwlogo.png"
-    },
-    {
-      "src": "/favicon.png",
-      "dest": "/public/favicon.png"
+{
+      "src": "/storage/(.*)",
+      "dest": "/public/storage/$1"
     },
     {
       "src": "/build/(.*)",
       "dest": "/public/build/$1"
     },
     {
-      "src": "/assets/(.*)",
-      "dest": "/public/assets/$1"
+      "src": "/favicon.(ico|png)",
+      "dest": "/public/favicon.$1"
+    },
+    {
+      "src": "/kanglwlogo.png",
+      "dest": "/public/kanglwlogo.png"
     },
     {
       "src": "/(.*)",
