@@ -6,7 +6,7 @@ import {
 import { Product } from './types';
 
 import { usePosStore } from './stores/usePosStore';
-import MenuCard from '@/components/menuCard';
+import MenuCard from '@/components/MenuCard';
 import OrderSummary from '@/components/OrderSummary';
 
 interface Props {
