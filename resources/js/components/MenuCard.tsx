@@ -19,7 +19,7 @@ export default function MenuCard({ product }: Props) {
     const item = cart.find((item) => item.product.id === product.id);
     const qty = item?.qty ?? 0;
 
-    console.log('product:', product.name, '| image:', product.image);
+    console.log('product:', product.name, '| image:', product.image_url);
 
     return (
         <div
@@ -33,9 +33,9 @@ export default function MenuCard({ product }: Props) {
         >
             {/* Product image */}
             <div className="relative h-32 w-full overflow-hidden bg-stone-100">
-                {product.image ? (
+                {product.image_url ? (
                     <img
-                        src={product.image}
+                        src={product.image_url}
                         alt={product.name}
                         className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />

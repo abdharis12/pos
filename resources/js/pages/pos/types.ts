@@ -14,6 +14,7 @@ export interface Product {
     is_active: boolean;
     category: Category;
     image: string | null;
+    image_url: string | null;
     description: string | null;
 }
 
