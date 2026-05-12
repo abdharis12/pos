@@ -60,6 +60,15 @@ return [
             'report' => false,
         ],
 
+        'tigris' => [
+            'driver'                  => 's3',
+            'key'                     => env('AWS_ACCESS_KEY_ID'),
+            'secret'                  => env('AWS_SECRET_ACCESS_KEY'),
+            'region'                  => env('AWS_REGION', 'auto'),
+            'endpoint'                => env('AWS_ENDPOINT_URL_S3'),
+            'use_path_style_endpoint' => true,
+            'visibility'              => 'public',
+        ],
     ],
 
     /*

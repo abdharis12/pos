@@ -74,7 +74,7 @@ class ProductController extends Controller
                 ->file('image')
                 ->store(
                     'products',
-                    'public',
+                    'tigris',
                 );
         }
 
