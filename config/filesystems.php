@@ -67,8 +67,10 @@ return [
             'region'                  => env('AWS_REGION', 'auto'),
             'bucket'                  => env('BUCKET_NAME'),
             'endpoint'                => env('AWS_ENDPOINT_URL_S3'),
+            'url'                     => env('TIGRIS_PUBLIC_URL'), 
             'use_path_style_endpoint' => true,
             'visibility'              => 'public',
+            'throw'                   => false,
         ],
     ],
 

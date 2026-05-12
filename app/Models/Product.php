@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Product extends Model
 {
@@ -16,6 +17,8 @@ class Product extends Model
         'stock',
         'is_active',
     ];
+
+    protected $appends = ['image_url'];
 
     public function category(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
@@ -44,5 +47,12 @@ class Product extends Model
                     );
             }
         });
+    }
+
+    public function getImageUrlAttribute(): ?string
+    {
+        return $this->image
+            ? Storage::disk('tigris')->url($this->image)
+            : null;
     }
 }

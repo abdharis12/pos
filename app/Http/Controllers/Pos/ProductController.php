@@ -39,7 +39,6 @@ class ProductController extends Controller
             'pos/products/index',
             [
                 'products' => $products,
-
                 'filters' => [
                     'search' =>
                     $request->search,
@@ -79,27 +78,13 @@ class ProductController extends Controller
         }
 
         Product::create([
-            'category_id' =>
-            $request->category_id,
-
-            'name' =>
-            $request->name,
-
-            'sku' =>
-            $request->sku,
-
-            'description' =>
-            $request->description,
-
-            'image' =>
-            $image,
-
-            'price' =>
-            $request->price,
-
-            'stock' =>
-            $request->stock,
-
+            'category_id' => $request->category_id,
+            'name' => $request->name,
+            'sku' => $request->sku,
+            'description' => $request->description,
+            'image' => $image,
+            'price' => $request->price,
+            'stock' => $request->stock,
             'is_active' =>
             $request->boolean(
                 'is_active',
@@ -116,20 +101,16 @@ class ProductController extends Controller
             );
     }
 
-    public function edit(
-        Product $product,
-    ): Response {
-
-        return Inertia::render(
-            'pos/products/edit',
-            [
-                'product' => $product,
-
-                'categories' => Category::query()
-                    ->orderBy('name')
-                    ->get(),
-            ],
-        );
+    public function edit(Product $product): Response
+    {
+        return Inertia::render('pos/products/edit', [
+            'product'    => array_merge($product->toArray(), [
+                'image_url' => $product->image
+                    ? Storage::disk('tigris')->url($product->image)
+                    : null,
+            ]),
+            'categories' => Category::orderBy('name')->get(),
+        ]);
     }
 
     public function update(
@@ -139,99 +120,47 @@ class ProductController extends Controller
 
         $data = $request->validated();
 
-        /*
-    |--------------------------------------------------------------------------
-    | KEEP OLD IMAGE
-    |--------------------------------------------------------------------------
-    */
         $data['image'] = $product->image;
 
-        /*
-    |--------------------------------------------------------------------------
-    | UPLOAD NEW IMAGE
-    |--------------------------------------------------------------------------
-    */
         if ($request->hasFile('image')) {
 
-            /*
-        |--------------------------------------------------------------------------
-        | DELETE OLD IMAGE
-        |--------------------------------------------------------------------------
-        */
-            if (
-                $product->image &&
-                Storage::disk('public')->exists(
-                    $product->image,
-                )
-            ) {
-
-                Storage::disk('public')
-                    ->delete(
-                        $product->image,
-                    );
+            // ✅ Fix: hapus dari tigris, bukan public
+            if ($product->image && Storage::disk('tigris')->exists($product->image)) {
+                Storage::disk('tigris')->delete($product->image);
             }
 
-            /*
-        |--------------------------------------------------------------------------
-        | STORE NEW IMAGE
-        |--------------------------------------------------------------------------
-        */
             $data['image'] = $request
                 ->file('image')
-                ->store(
-                    'products',
-                    'public',
-                );
+                ->store('products', 'tigris');
         }
 
         $product->update([
-            'category_id' =>
-            $data['category_id'],
-
-            'name' =>
-            $data['name'],
-
-            'sku' =>
-            $data['sku'],
-
-            'description' =>
-            $data['description'],
-
-            'image' =>
-            $data['image'],
-
-            'price' =>
-            $data['price'],
-
-            'stock' =>
-            $data['stock'],
-
-            'is_active' =>
-            $request->boolean(
-                'is_active',
-            ),
+            'category_id' => $data['category_id'],
+            'name'        => $data['name'],
+            'sku'         => $data['sku'],
+            'description' => $data['description'],
+            'image'       => $data['image'],
+            'price'       => $data['price'],
+            'stock'       => $data['stock'],
+            'is_active'   => $request->boolean('is_active'),
         ]);
 
-        return redirect()->route('productsIndex')->with('success', 'Produk berhasil diupdate');
+        return redirect()
+            ->route('productsIndex')
+            ->with('success', 'Produk berhasil diupdate');
     }
 
     public function destroy(
         Product $product,
     ): RedirectResponse {
 
+        // ✅ Fix: hapus dari tigris, bukan public
         if ($product->image) {
-
-            Storage::disk('public')
-                ->delete(
-                    $product->image,
-                );
+            Storage::disk('tigris')->delete($product->image);
         }
 
         $product->delete();
 
-        return back()->with(
-            'success',
-            'Produk berhasil dihapus',
-        );
+        return back()->with('success', 'Produk berhasil dihapus');
     }
 }

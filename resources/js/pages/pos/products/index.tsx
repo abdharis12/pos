@@ -16,22 +16,15 @@ import { Button } from '@/components/ui/button';
 
 interface Product {
     id: number;
-
     name: string;
-
     sku: string;
-
     image: string | null;
-
+    image_url: string | null;
     price: number;
-
     stock: number;
-
     is_active: boolean;
-
     category: {
         id: number;
-
         name: string;
     };
 }
@@ -40,7 +33,6 @@ interface Props {
     products: {
         data: Product[];
     };
-
     filters: {
         search: string;
     };
@@ -107,33 +99,13 @@ export default function ProductIndex({
                     <table className="w-full">
                         <thead className="bg-zinc-100">
                             <tr>
-                                <th className="px-6 py-4 text-left">
-                                    Product
-                                </th>
-
-                                <th className="px-6 py-4 text-left">
-                                    SKU
-                                </th>
-
-                                <th className="px-6 py-4 text-left">
-                                    Category
-                                </th>
-
-                                <th className="px-6 py-4 text-left">
-                                    Price
-                                </th>
-
-                                <th className="px-6 py-4 text-left">
-                                    Stock
-                                </th>
-
-                                <th className="px-6 py-4 text-left">
-                                    Status
-                                </th>
-
-                                <th className="px-6 py-4 text-right">
-                                    Action
-                                </th>
+                                <th className="px-6 py-4 text-left">Product</th>
+                                <th className="px-6 py-4 text-left">SKU</th>
+                                <th className="px-6 py-4 text-left">Category</th>
+                                <th className="px-6 py-4 text-left">Price</th>
+                                <th className="px-6 py-4 text-left">Stock</th>
+                                <th className="px-6 py-4 text-left">Status</th>
+                                <th className="px-6 py-4 text-right">Action</th>
                             </tr>
                         </thead>
 
@@ -150,12 +122,10 @@ export default function ProductIndex({
                                     >
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-4">
-                                                {product.image ? (
+                                                {product.image_url ? (
                                                     <img
-                                                        src={`/storage/${product.image}`}
-                                                        alt={
-                                                            product.name
-                                                        }
+                                                        src={product.image_url}  
+                                                        alt={product.name}
                                                         className="h-16 w-16 rounded-2xl object-cover"
                                                     />
                                                 ) : (
@@ -262,14 +232,12 @@ export default function ProductIndex({
                                 className="rounded-3xl border bg-white p-4"
                             >
                                 <div className="flex gap-4">
-                                    {product.image ? (
-                                        <img
-                                            src={`/storage/${product.image}`}
-                                            alt={
-                                                product.name
-                                            }
-                                            className="h-20 w-20 rounded-2xl object-cover"
-                                        />
+                                    {product.image_url ? (
+                                           <img
+                                                src={product.image_url}
+                                                alt={product.name}
+                                                className="h-20 w-20 rounded-2xl object-cover"
+                                            />
                                     ) : (
                                         <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-zinc-100 text-sm text-zinc-400">
                                             No Image

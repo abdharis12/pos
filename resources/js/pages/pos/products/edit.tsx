@@ -15,6 +15,7 @@ interface Product {
     sku: string;
     description: string | null;
     image: string | null;
+    image_url: string | null;
     price: number;
     stock: number;
     is_active: boolean;
@@ -50,7 +51,7 @@ export default function ProductEdit({ categories, product }: Props) {
     const inputRef = useRef<HTMLInputElement>(null);
 
     const [preview, setPreview] = useState<string | null>(
-        product.image ? `/storage/${product.image}` : null,
+        product.image_url ?? null,
     );
 
     const { data, setData, put, processing, errors } = useForm({
