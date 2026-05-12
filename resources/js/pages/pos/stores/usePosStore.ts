@@ -75,28 +75,38 @@ export const usePosStore = create<PosState>(
             }),
 
         addItem: (product) => {
-            const cart = [...get().cart];
+            const price = Number(product.price); // ← pastikan number
 
-            const index = cart.findIndex(
-                (item) =>
-                    item.product.id === product.id,
-            );
+            set((state) => {
+                const existing = state.cart.find(
+                    (item) => item.product.id === product.id,
+                );
 
-            if (index >= 0) {
-                cart[index].qty += 1;
+                if (existing) {
+                    return {
+                        cart: state.cart.map((item) =>
+                            item.product.id === product.id
+                                ? {
+                                    ...item,
+                                    qty: item.qty + 1,
+                                    subtotal: Number(item.subtotal) + price, // ← Number()
+                                }
+                                : item,
+                        ),
+                    };
+                }
 
-                cart[index].subtotal =
-                    cart[index].qty *
-                    product.price;
-            } else {
-                cart.push({
-                    product,
-                    qty: 1,
-                    subtotal: product.price,
-                });
-            }
-
-            set({ cart });
+                return {
+                    cart: [
+                        ...state.cart,
+                        {
+                            product,
+                            qty: 1,
+                            subtotal: price, // ← number langsung
+                        },
+                    ],
+                };
+            });
         },
 
         removeItem: (productId) => {
@@ -150,7 +160,11 @@ export const usePosStore = create<PosState>(
                 0,
             ),
 
-        total: () => get().subtotal(),
+        total: () =>
+            get().cart.reduce(
+                (sum, item) => sum + Number(item.subtotal), // ← Number()
+                0,
+            ),
 
         changeAmount: () => {
             return Math.max(
