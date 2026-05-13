@@ -1,9 +1,8 @@
+import { Analytics } from '@vercel/analytics/react';
+import { Toaster } from 'react-hot-toast';
+
 import AppLayoutTemplate from '@/layouts/app/app-sidebar-layout';
 import type { BreadcrumbItem } from '@/types';
-import { Toaster } from 'react-hot-toast';
-import { inject } from '@vercel/analytics';
- 
-inject();
 
 export default function AppLayout({
     breadcrumbs = [],
@@ -16,6 +15,7 @@ export default function AppLayout({
         <AppLayoutTemplate breadcrumbs={breadcrumbs}>
             <Toaster position="top-right" />
             {children}
+            <Analytics />
         </AppLayoutTemplate>
     );
 }

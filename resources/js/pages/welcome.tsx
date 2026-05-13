@@ -1,4 +1,6 @@
 import { Head, Link, usePage } from '@inertiajs/react';
+import { Analytics } from '@vercel/analytics/react';
+
 import { dashboard, login } from '@/routes';
 
 export default function Welcome({
@@ -177,6 +179,7 @@ export default function Welcome({
                     </div>
                 </main>
             </div>
+            <Analytics />
         </>
     );
 }
