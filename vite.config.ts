@@ -26,4 +26,9 @@ export default defineConfig({
     esbuild: {
         jsx: 'automatic',
     },
+
+    optimizeDeps: {
+        // Tambahkan ini untuk mencegah Vite mengutak-atik library analytics
+        exclude: ['@vercel/analytics']
+    },
 });
