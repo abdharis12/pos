@@ -61,10 +61,12 @@ class DashboardController extends Controller
                     'order',
                     fn($q) => $q->whereDate('created_at', today()),
                 )],
-                'subtotal',
+                'subtotal', // sesuaikan nama kolom
             )
             ->orderByDesc('order_items_sum_qty')
             ->get();
+
+        $totalQtyToday = $todayProductSales->sum('order_items_sum_qty');
 
         $cashSales = Order::query()
             ->whereDate('created_at', today())
@@ -85,6 +87,7 @@ class DashboardController extends Controller
             'cashSales'         => $cashSales,
             'qrisSales'         => $qrisSales,
             'todayProductSales' => $todayProductSales,
+            'totalQtyToday'     => $totalQtyToday,
         ]);
     }
 }

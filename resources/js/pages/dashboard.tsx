@@ -14,7 +14,7 @@ interface TodayProductSale {
     id: number;
     name: string;
     order_items_sum_qty: number;
-    order_items_sum_subtotal: number; // sesuaikan nama kolom
+    order_items_sum_subtotal: number;
 }
 
 interface Props {
@@ -26,6 +26,7 @@ interface Props {
     topProducts: TopProduct[];
     topProductsToday: TopProduct[];
     todayProductSales: TodayProductSale[];
+    totalQtyToday: number;
 }
 
 export default function Dashboard({
@@ -37,11 +38,8 @@ export default function Dashboard({
     topProducts,
     topProductsToday,
     todayProductSales,
+    totalQtyToday,
 }: Props) {
-    const totalQtyToday = todayProductSales.reduce(
-        (sum, p) => sum + (p.order_items_sum_qty ?? 0),
-        0,
-    );
 
     return (
         <>
