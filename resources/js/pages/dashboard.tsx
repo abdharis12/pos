@@ -195,7 +195,7 @@ export default function Dashboard({
                                 </span>
                                 <div className="col-span-3 flex justify-center">
                                     <span className="rounded-lg bg-amber-400 px-2.5 py-1 text-xs font-black text-stone-900">
-                                        {sumTodayQty} porsi
+                                        {totalQtyToday} porsi
                                     </span>
                                 </div>
                                 <span className="col-span-3 text-right text-sm font-black text-white">
