@@ -44,6 +44,28 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
+        $todayProductSales = Product::query()
+            ->whereHas(
+                'orderItems.order',
+                fn($q) => $q->whereDate('created_at', today()),
+            )
+            ->withSum(
+                ['orderItems' => fn($q) => $q->whereHas(
+                    'order',
+                    fn($q) => $q->whereDate('created_at', today()),
+                )],
+                'qty',
+            )
+            ->withSum(
+                ['orderItems' => fn($q) => $q->whereHas(
+                    'order',
+                    fn($q) => $q->whereDate('created_at', today()),
+                )],
+                'subtotal',
+            )
+            ->orderByDesc('order_items_sum_qty')
+            ->get();
+
         $cashSales = Order::query()
             ->whereDate('created_at', today())
             ->where('payment_method', 'cash')
@@ -62,6 +84,7 @@ class DashboardController extends Controller
             'topProductsToday'  => $topProductsToday,
             'cashSales'         => $cashSales,
             'qrisSales'         => $qrisSales,
+            'todayProductSales' => $todayProductSales,
         ]);
     }
 }

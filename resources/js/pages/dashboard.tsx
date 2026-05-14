@@ -1,5 +1,5 @@
 import { Head } from '@inertiajs/react';
-import { CreditCard, ShoppingCart, Wallet, Flame } from 'lucide-react';
+import { CreditCard, ShoppingCart, Wallet, Flame, Package } from 'lucide-react';
 
 import { dashboard } from '@/routes';
 import { formatRupiah } from '@/lib/currency';
@@ -10,6 +10,13 @@ interface TopProduct {
     order_items_sum_qty: number;
 }
 
+interface TodayProductSale {
+    id: number;
+    name: string;
+    order_items_sum_qty: number;
+    order_items_sum_subtotal: number; // sesuaikan nama kolom
+}
+
 interface Props {
     todaySales: number;
     todayTransactions: number;
@@ -18,6 +25,7 @@ interface Props {
     qrisSales: number;
     topProducts: TopProduct[];
     topProductsToday: TopProduct[];
+    todayProductSales: TodayProductSale[];
 }
 
 export default function Dashboard({
@@ -28,7 +36,13 @@ export default function Dashboard({
     qrisSales,
     topProducts,
     topProductsToday,
+    todayProductSales,
 }: Props) {
+    const totalQtyToday = todayProductSales.reduce(
+        (sum, p) => sum + (p.order_items_sum_qty ?? 0),
+        0,
+    );
+
     return (
         <>
             <Head title="Dashboard" />
@@ -114,6 +128,84 @@ export default function Dashboard({
                     </div>
                 </div>
 
+                {/* TODAY PRODUCT SALES BREAKDOWN */}
+                <div className="rounded-3xl bg-white p-5 ring-1 ring-stone-200 lg:p-6">
+                    <div className="mb-5 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-stone-100">
+                                <Package className="h-4 w-4 text-stone-600" />
+                            </div>
+                            <div>
+                                <h2 className="text-base font-black tracking-tight text-stone-900">
+                                    Rincian Produk Terjual
+                                </h2>
+                                <p className="text-xs text-stone-400">Semua produk yang terjual hari ini</p>
+                            </div>
+                        </div>
+                        {totalQtyToday > 0 && (
+                            <div className="rounded-2xl bg-amber-400 px-3 py-1.5 text-xs font-black text-stone-900">
+                                {totalQtyToday} porsi total
+                            </div>
+                        )}
+                    </div>
+
+                    {todayProductSales.length === 0 ? (
+                        <div className="rounded-2xl border border-dashed border-stone-200 py-10 text-center text-sm text-stone-400">
+                            Belum ada produk terjual hari ini
+                        </div>
+                    ) : (
+                        <div className="overflow-hidden rounded-2xl ring-1 ring-stone-100">
+                            {/* Table header */}
+                            <div className="grid grid-cols-12 gap-3 bg-stone-50 px-4 py-2.5">
+                                <span className="col-span-1 text-xs font-semibold uppercase tracking-wider text-stone-400">#</span>
+                                <span className="col-span-5 text-xs font-semibold uppercase tracking-wider text-stone-400">Produk</span>
+                                <span className="col-span-3 text-center text-xs font-semibold uppercase tracking-wider text-stone-400">Qty</span>
+                                <span className="col-span-3 text-right text-xs font-semibold uppercase tracking-wider text-stone-400">Total</span>
+                            </div>
+
+                            {/* Table rows */}
+                            <div className="divide-y divide-stone-100">
+                                {todayProductSales.map((product, index) => (
+                                    <div
+                                        key={product.id}
+                                        className="grid grid-cols-12 items-center gap-3 px-4 py-3 transition-colors hover:bg-stone-50"
+                                    >
+                                        <span className="col-span-1 text-xs font-bold tabular-nums text-stone-300">
+                                            {index + 1}
+                                        </span>
+                                        <span className="col-span-5 truncate text-sm font-semibold text-stone-800">
+                                            {product.name}
+                                        </span>
+                                        <div className="col-span-3 flex justify-center">
+                                            <span className="rounded-lg bg-amber-50 px-2.5 py-1 text-xs font-black text-amber-700">
+                                                {product.order_items_sum_qty ?? 0} porsi
+                                            </span>
+                                        </div>
+                                        <span className="col-span-3 text-right text-sm font-bold text-stone-900">
+                                            {formatRupiah(product.order_items_sum_subtotal ?? 0)}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Footer total */}
+                            <div className="grid grid-cols-12 items-center gap-3 border-t border-stone-200 bg-stone-900 px-4 py-3">
+                                <span className="col-span-6 text-xs font-black uppercase tracking-wider text-stone-400">
+                                    Total
+                                </span>
+                                <div className="col-span-3 flex justify-center">
+                                    <span className="rounded-lg bg-amber-400 px-2.5 py-1 text-xs font-black text-stone-900">
+                                        {totalQtyToday} porsi
+                                    </span>
+                                </div>
+                                <span className="col-span-3 text-right text-sm font-black text-white">
+                                    {formatRupiah(todaySales)}
+                                </span>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
                 {/* BOTTOM GRID: Today's top + All-time top */}
                 <div className="grid gap-4 lg:grid-cols-2">
                     {/* TOP PRODUCTS TODAY */}
@@ -144,8 +236,7 @@ export default function Dashboard({
                                     return (
                                         <div
                                             key={product.id}
-                                            className={`flex items-center gap-3 rounded-2xl px-4 py-3 ${isTop ? 'bg-amber-400' : 'bg-stone-800'
-                                                }`}
+                                            className={`flex items-center gap-3 rounded-2xl px-4 py-3 ${isTop ? 'bg-amber-400' : 'bg-stone-800'}`}
                                         >
                                             <span className={`w-5 text-xs font-black tabular-nums ${isTop ? 'text-stone-900' : 'text-stone-500'}`}>
                                                 {index + 1}
