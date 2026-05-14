@@ -206,7 +206,7 @@ export default function OrderSummary() {
                                 <img
                                     src="/qris.jpeg"
                                     alt="QRIS Kang LW"
-                                    className="mx-auto h-16 object-contain"
+                                    className="mx-auto h-full object-contain"
                                 />
                             </div>
                             <p className="text-sm font-semibold text-white">Scan QRIS</p>
