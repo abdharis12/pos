@@ -204,8 +204,8 @@ export default function OrderSummary() {
                         <div className="rounded-xl border border-stone-700 bg-stone-800 p-5 text-center">
                             <div className="mb-1 text-2xl">
                                 <img
-                                    src="/img/qris.jpeg"
-                                    alt="QRIS"
+                                    src="/qris.jpeg"
+                                    alt="QRIS Kang LW"
                                     className="mx-auto h-16 object-contain"
                                 />
                             </div>
