@@ -43,11 +43,6 @@ export default function Dashboard({
         0,
     );
 
-    const totalSubtotalToday = todayProductSales.reduce(
-        (sum, p) => sum + (p.order_items_sum_subtotal ?? 0),
-        0,
-    );
-
     return (
         <>
             <Head title="Dashboard" />
@@ -200,11 +195,11 @@ export default function Dashboard({
                                 </span>
                                 <div className="col-span-3 flex justify-center">
                                     <span className="rounded-lg bg-amber-400 px-2.5 py-1 text-xs font-black text-stone-900">
-                                        {totalQtyToday} porsi
+                                        {sumTodayQty} porsi
                                     </span>
                                 </div>
                                 <span className="col-span-3 text-right text-sm font-black text-white">
-                                    {formatRupiah(totalSubtotalToday)}
+                                    {formatRupiah(todaySales)}
                                 </span>
                             </div>
                         </div>
