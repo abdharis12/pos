@@ -204,7 +204,7 @@ export default function OrderSummary() {
                         <div className="rounded-xl border border-stone-700 bg-stone-800 p-5 text-center">
                             <div className="mb-1 text-2xl">
                                 <img
-                                    src={{ asset('/public/img/qris.jpeg') }}
+                                    src="/img/qris.jpeg"
                                     alt="QRIS"
                                     className="mx-auto h-16 object-contain"
                                 />
