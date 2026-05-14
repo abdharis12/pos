@@ -23,8 +23,8 @@
       "dest": "/public/kanglwlogo.png"
     },
     {
-      "src": "/qris.jpeg",
-      "dest": "/public/img/qris.jpeg"
+    "src": "/qris.jpeg",
+    "dest": "/public/qris.jpeg"
     },
     {
       "src": "/(.*)",
