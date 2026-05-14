@@ -71,8 +71,8 @@ export default function OrderSummary() {
                         type="button"
                         onClick={() => setPaidAmount(amount)}
                         className={`rounded-xl border py-2 text-sm font-bold transition-all duration-200 active:scale-95 ${Number(paidAmount) === amount
-                                ? 'border-amber-400 bg-amber-400 text-stone-900'
-                                : 'border-stone-700 bg-stone-800 text-stone-300 hover:border-stone-500 hover:text-white'
+                            ? 'border-amber-400 bg-amber-400 text-stone-900'
+                            : 'border-stone-700 bg-stone-800 text-stone-300 hover:border-stone-500 hover:text-white'
                             }`}
                     >
                         {formatRupiah(amount)}
@@ -176,8 +176,8 @@ export default function OrderSummary() {
                             type="button"
                             onClick={() => setPaymentMethod('cash')}
                             className={`rounded-xl border py-3 text-sm font-bold transition-all duration-200 ${paymentMethod === 'cash'
-                                    ? 'border-amber-400 bg-amber-400 text-stone-900'
-                                    : 'border-stone-700 bg-stone-800 text-stone-400 hover:border-stone-500 hover:text-white'
+                                ? 'border-amber-400 bg-amber-400 text-stone-900'
+                                : 'border-stone-700 bg-stone-800 text-stone-400 hover:border-stone-500 hover:text-white'
                                 }`}
                         >
                             💵 Cash
@@ -186,8 +186,8 @@ export default function OrderSummary() {
                             type="button"
                             onClick={() => setPaymentMethod('qris')}
                             className={`rounded-xl border py-3 text-sm font-bold transition-all duration-200 ${paymentMethod === 'qris'
-                                    ? 'border-amber-400 bg-amber-400 text-stone-900'
-                                    : 'border-stone-700 bg-stone-800 text-stone-400 hover:border-stone-500 hover:text-white'
+                                ? 'border-amber-400 bg-amber-400 text-stone-900'
+                                : 'border-stone-700 bg-stone-800 text-stone-400 hover:border-stone-500 hover:text-white'
                                 }`}
                         >
                             📱 QRIS
@@ -202,7 +202,13 @@ export default function OrderSummary() {
                 {paymentMethod === 'qris' && (
                     <div className="space-y-3">
                         <div className="rounded-xl border border-stone-700 bg-stone-800 p-5 text-center">
-                            <div className="mb-1 text-2xl">⬛</div>
+                            <div className="mb-1 text-2xl">
+                                <img
+                                    src={{ asset('/public/img/qris.jpeg') }}
+                                    alt="QRIS"
+                                    className="mx-auto h-16 object-contain"
+                                />
+                            </div>
                             <p className="text-sm font-semibold text-white">Scan QRIS</p>
                             <p className="mt-0.5 text-xs text-stone-400">Pembayaran digital</p>
                         </div>
