@@ -9,6 +9,68 @@ import { formatNumber, parseNumber } from '@/lib/number';
 
 const QUICK_AMOUNTS = [50_000, 100_000];
 
+// ✅ Dipindahkan ke luar OrderSummary agar React tidak unmount/remount setiap render
+function PaidAmountInput({
+    paidAmount,
+    setPaidAmount,
+    changeAmount,
+}: {
+    paidAmount: number | string;
+    setPaidAmount: (val: number | string) => void;
+    changeAmount: number;
+}) {
+    return (
+        <div>
+            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-widest text-stone-400">
+                Uang Dibayarkan
+            </label>
+
+            {/* Quick amount buttons */}
+            <div className="mb-2 grid grid-cols-2 gap-2">
+                {QUICK_AMOUNTS.map((amount) => (
+                    <button
+                        key={amount}
+                        type="button"
+                        onClick={() => setPaidAmount(amount)}
+                        className={`rounded-xl border py-2 text-sm font-bold transition-all duration-200 active:scale-95 ${Number(paidAmount) === amount
+                            ? 'border-amber-400 bg-amber-400 text-stone-900'
+                            : 'border-stone-700 bg-stone-800 text-stone-300 hover:border-stone-500 hover:text-white'
+                            }`}
+                    >
+                        {formatRupiah(amount)}
+                    </button>
+                ))}
+            </div>
+
+            {/* Manual input */}
+            <input
+                type="text"
+                inputMode="numeric"
+                value={formatNumber(paidAmount)}
+                onChange={(e) => {
+                    const raw = e.target.value;
+                    if (raw === '') {
+                        setPaidAmount('');
+                        return;
+                    }
+                    const parsed = parseNumber(raw);
+                    if (isNaN(parsed)) return;
+                    setPaidAmount(parsed);
+                }}
+                placeholder="Atau ketik nominal lain..."
+                className="w-full rounded-xl border border-stone-700 bg-stone-800 px-4 py-2.5 text-sm text-white placeholder-stone-500 outline-none transition focus:border-amber-400 focus:ring-1 focus:ring-amber-400/30"
+            />
+
+            <div className="mt-2 flex items-center justify-between rounded-xl bg-stone-800 px-4 py-3">
+                <span className="text-sm text-stone-400">Kembalian</span>
+                <span className="text-base font-bold text-emerald-400">
+                    {formatRupiah(changeAmount)}
+                </span>
+            </div>
+        </div>
+    );
+}
+
 export default function OrderSummary() {
     const cart = usePosStore((state) => state.cart);
     const total = usePosStore((state) => state.total());
@@ -56,54 +118,6 @@ export default function OrderSummary() {
         if (paymentMethod === 'cash' && Number(paidAmount || 0) < total) return false;
         return true;
     };
-
-    const PaidAmountInput = () => (
-        <div>
-            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-widest text-stone-400">
-                Uang Dibayarkan
-            </label>
-
-            {/* Quick amount buttons */}
-            <div className="mb-2 grid grid-cols-2 gap-2">
-                {QUICK_AMOUNTS.map((amount) => (
-                    <button
-                        key={amount}
-                        type="button"
-                        onClick={() => setPaidAmount(amount)}
-                        className={`rounded-xl border py-2 text-sm font-bold transition-all duration-200 active:scale-95 ${Number(paidAmount) === amount
-                            ? 'border-amber-400 bg-amber-400 text-stone-900'
-                            : 'border-stone-700 bg-stone-800 text-stone-300 hover:border-stone-500 hover:text-white'
-                            }`}
-                    >
-                        {formatRupiah(amount)}
-                    </button>
-                ))}
-            </div>
-
-            {/* Manual input */}
-            <input
-                type="text"
-                inputMode="numeric"
-                value={formatNumber(paidAmount)}
-                onChange={(e) => {
-                    const raw = e.target.value;
-                    if (raw === '') { setPaidAmount(''); return; }
-                    const parsed = parseNumber(raw);
-                    if (isNaN(parsed)) return;
-                    setPaidAmount(parsed);
-                }}
-                placeholder="Atau ketik nominal lain..."
-                className="w-full rounded-xl border border-stone-700 bg-stone-800 px-4 py-2.5 text-sm text-white placeholder-stone-500 outline-none transition focus:border-amber-400 focus:ring-1 focus:ring-amber-400/30"
-            />
-
-            <div className="mt-2 flex items-center justify-between rounded-xl bg-stone-800 px-4 py-3">
-                <span className="text-sm text-stone-400">Kembalian</span>
-                <span className="text-base font-bold text-emerald-400">
-                    {formatRupiah(changeAmount)}
-                </span>
-            </div>
-        </div>
-    );
 
     return (
         <div className="flex h-[50vh] w-full flex-col overflow-hidden border-t border-stone-200 bg-stone-900 lg:h-full lg:w-[380px] lg:border-l lg:border-t-0">
@@ -196,7 +210,13 @@ export default function OrderSummary() {
                 </div>
 
                 {/* Cash */}
-                {paymentMethod === 'cash' && <PaidAmountInput />}
+                {paymentMethod === 'cash' && (
+                    <PaidAmountInput
+                        paidAmount={paidAmount}
+                        setPaidAmount={setPaidAmount}
+                        changeAmount={changeAmount}
+                    />
+                )}
 
                 {/* QRIS */}
                 {paymentMethod === 'qris' && (
@@ -213,7 +233,11 @@ export default function OrderSummary() {
                             <p className="mt-0.5 text-xs text-stone-400">Pembayaran digital</p>
                         </div>
 
-                        <PaidAmountInput />
+                        <PaidAmountInput
+                            paidAmount={paidAmount}
+                            setPaidAmount={setPaidAmount}
+                            changeAmount={changeAmount}
+                        />
                     </div>
                 )}
             </div>
